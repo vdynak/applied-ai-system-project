@@ -1,6 +1,33 @@
 import streamlit as st
 from pawpal_system import Owner, Pet, Task, Scheduler
 
+
+def find_pet_name_for_task(owner: Owner, target_task: Task) -> str:
+    """Return the pet name for a given task object."""
+    for pet in owner.pets:
+        if target_task in pet.tasks:
+            return pet.name
+    return "Unknown"
+
+
+def task_rows(owner: Owner, tasks: list[Task], scheduler: Scheduler) -> list[dict]:
+    """Convert task objects into table rows for Streamlit display."""
+    rows = []
+    for task in tasks:
+        rows.append(
+            {
+                "Pet": find_pet_name_for_task(owner, task),
+                "Task": task.description,
+                "Time": task.time,
+                "Minutes": scheduler.time_to_minutes(task.time),
+                "Priority": task.priority,
+                "Type": task.type,
+                "Frequency": task.frequency,
+                "Completed": task.completion_status,
+            }
+        )
+    return rows
+
 # Initialize Owner in session state if it doesn't exist
 if 'owner' not in st.session_state:
     st.session_state.owner = Owner("Jordan", {}, 120)  # Default values
@@ -94,11 +121,18 @@ else:
 st.markdown("### Task Overview")
 if owner.pets:
     scheduler = Scheduler()
+    all_tasks = owner.get_all_tasks()
     incomplete = scheduler.get_incomplete_tasks(owner)
+
+    if all_tasks:
+        st.write("All Tasks")
+        st.table(task_rows(owner, all_tasks, scheduler))
+    else:
+        st.info("No tasks yet. Add tasks above.")
+
     if incomplete:
-        st.write("Incomplete Tasks:")
-        for task in incomplete:
-            st.write(f"- {task.description} (Pet: {[pet.name for pet in owner.pets if task in pet.tasks][0]})")
+        st.write("Incomplete Tasks")
+        st.table(task_rows(owner, incomplete, scheduler))
     else:
         st.info("All tasks completed!")
 
@@ -109,6 +143,7 @@ st.caption("Generate your daily pet care plan.")
 
 sort_by_time = st.checkbox("Sort by time (ascending) instead of priority")
 filter_pet = st.selectbox("Filter by pet (optional)", ["All"] + [pet.name for pet in owner.pets]) if owner.pets else None
+show_incomplete_only = st.checkbox("Show only incomplete tasks", value=True)
 
 if st.button("Generate Schedule"):
     if owner.pets and any(pet.tasks for pet in owner.pets):
@@ -117,28 +152,36 @@ if st.button("Generate Schedule"):
         if filter_pet and filter_pet != "All":
             all_tasks = scheduler.get_tasks_for_pet(owner, filter_pet)
         incomplete_tasks = scheduler.get_incomplete_tasks(owner)
-        # Use incomplete if available, else all
-        tasks_to_plan = incomplete_tasks if incomplete_tasks else all_tasks
+        tasks_to_plan = incomplete_tasks if show_incomplete_only else all_tasks
+        if show_incomplete_only and not tasks_to_plan:
+            tasks_to_plan = all_tasks
+
         constrained_tasks = scheduler.consider_constraints(owner, tasks_to_plan)
         if sort_by_time:
             constrained_tasks = scheduler.sort_by_time(constrained_tasks)
         else:
-            constrained_tasks.sort(key=lambda t: (-t.priority, t.time))
-        # Simulate plan with conflicts
-        plan = scheduler.generate_plan(owner)  # This uses the internal logic
+            constrained_tasks.sort(key=lambda t: (-t.priority, scheduler.time_to_minutes(t.time)))
+
+        # Build a UI plan from the filtered/sorted task set and available time.
+        plan = []
+        total_time = 0
+        for task in constrained_tasks:
+            minutes = scheduler.time_to_minutes(task.time)
+            if total_time + minutes <= owner.available_time:
+                plan.append(task)
+                total_time += minutes
+
         if plan:
             st.success("Schedule generated!")
-            st.write("Today's Plan:")
-            total_time = 0
-            for task in plan:
-                minutes = scheduler.time_to_minutes(task.time)
-                st.write(f"- {task.description} ({task.time} / {minutes} min, priority {task.priority}) - Type: {task.type}")
-                total_time += minutes
-            st.write(f"Total time: {total_time} min (out of {owner.available_time} min available)")
-            if hasattr(scheduler, 'conflicts') and scheduler.conflicts:
-                st.warning("Conflicts detected:")
-                for conflict in scheduler.conflicts:
-                    st.write(f"- {conflict}")
+            st.table(task_rows(owner, plan, scheduler))
+            st.success(f"Total scheduled time: {total_time} min / {owner.available_time} min available")
+
+            # Lightweight conflict warnings from Scheduler.
+            warnings = scheduler.detect_time_conflicts(owner)
+            if warnings:
+                st.warning("Potential scheduling conflicts found. Review these before starting your day:")
+                for warning in warnings:
+                    st.write(f"- {warning}")
         else:
             st.warning("No tasks fit within available time.")
     else:

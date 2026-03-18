@@ -51,6 +51,21 @@ Recent scheduling improvements include:
 - Recurring task handling: daily and weekly tasks can auto-generate the next occurrence when completed.
 - Lightweight conflict detection: the scheduler returns warnings when multiple tasks are scheduled at the same time.
 
+## Features
+
+- Owner and pet management: create an owner profile, add multiple pets, and store each pet's task list.
+- Task modeling with recurrence: tasks track description, HH:MM time, priority, type, frequency, completion status, and due date.
+- Priority-aware plan generation: builds a daily plan constrained by available owner time.
+- Sorting by time: supports chronological HH:MM sorting for cleaner schedule review.
+- Filtering by pet and status: view pet-specific tasks and incomplete tasks only.
+- Daily/weekly recurrence logic: marking recurring tasks complete creates the next occurrence automatically.
+- Conflict warnings: detects duplicate time slots and returns lightweight warning messages instead of failing.
+- Streamlit-first visibility: schedule outputs and warnings are presented using tables and status components for clear UX.
+
+## 📸 Demo
+
+<a href="app.png" target="_blank"><img src='app.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
 ## Testing PawPal+
 
 Run the automated tests with:
