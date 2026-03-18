@@ -50,3 +50,21 @@ Recent scheduling improvements include:
 - Flexible filtering: tasks can be filtered by pet and by completion status.
 - Recurring task handling: daily and weekly tasks can auto-generate the next occurrence when completed.
 - Lightweight conflict detection: the scheduler returns warnings when multiple tasks are scheduled at the same time.
+
+## Testing PawPal+
+
+Run the automated tests with:
+
+```bash
+python -m pytest
+```
+
+Current tests cover core scheduler behavior, including:
+
+- Sorting correctness for HH:MM task times.
+- Recurrence logic for daily tasks creating the next occurrence after completion.
+- Conflict detection warnings when multiple tasks share the same scheduled time.
+
+Confidence Level: ★★★★☆ (4/5)
+
+The test suite is currently green and validates key happy paths and important edge cases, but additional coverage for more complex overlap scenarios and UI integration would further improve reliability.
