@@ -7,10 +7,22 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+The initial UML design includes four classes: Owner, Pet, Task, and Scheduler. The Owner class represents the pet owner and manages their profile, including name, preferences, available time, and a list of pets. It has methods to add pets and update preferences. The Pet class represents individual pets with attributes like name, type, age, and a list of associated tasks, and includes a method to add tasks. The Task class is a simple data holder for care tasks, with attributes for name, duration, priority, and type. The Scheduler class handles the core logic for generating daily plans, with methods to create a plan based on the owner and consider constraints like time and priorities.
+
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+Yes, the design changed slightly during implementation. Initially, the methods in the Owner and Pet classes were left as empty stubs. After reviewing the skeleton, I implemented the add_task method in Pet to append tasks to the list, add_pet in Owner to append pets, and set_preferences to update the preferences dictionary. This was done to make the classes functional for basic operations, ensuring the relationships (Owner has Pets, Pet has Tasks) are properly maintained without adding unnecessary complexity.
+
+**c. Core User Actions**
+
+Based on the project requirements outlined in the README, the three core actions a user should be able to perform with PawPal+ are:
+
+1. Enter basic owner and pet information to establish their profile and preferences.
+2. Add or edit pet care tasks, specifying details such as duration and priority for each task.
+3. Generate and view a daily schedule or plan that organizes tasks considering time constraints, priorities, and owner preferences.
 
 ---
 
