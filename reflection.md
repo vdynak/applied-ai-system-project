@@ -38,6 +38,8 @@ Based on the project requirements outlined in the README, the three core actions
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+One tradeoff in my scheduler is conflict detection: it only checks for exact time-string matches (for example, two tasks both at 08:00) instead of calculating partial overlaps between durations (for example, 08:00-08:30 overlapping with 08:15-08:45). I reviewed a more Pythonic approach that builds richer time intervals and checks every pair, which is more complete but harder to read for this project stage. I kept the simpler exact-match warning method because it is lightweight, easy to explain, and gives useful feedback without making the app brittle or overly complex for a beginner-friendly pet planning scenario.
+
 ---
 
 ## 3. AI Collaboration
