@@ -231,7 +231,7 @@ If I had another iteration, I would add real interval-based conflict detection, 
 
 ## Demo Walkthrough
 
-> **Loom Video:** [INSERT YOUR LOOM LINK HERE]
+> **Loom Video:** [https://www.loom.com/share/4901ee31223f46978d684b5125d3b96c](https://www.loom.com/share/4901ee31223f46978d684b5125d3b96c)
 
 The walkthrough demonstrates 2-3 end-to-end inputs through the Streamlit app, showing AI scheduling with reasoning, fallback behavior, and guardrail/validation responses.
 
