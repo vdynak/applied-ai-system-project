@@ -1,0 +1,46 @@
+classDiagram
+    class Task {
+        +description: str
+        +time: str
+        +priority: int
+        +type: str
+        +frequency: str
+        +completion_status: bool
+        +due_date: date
+        +mark_complete() Task|None
+    }
+
+    class Pet {
+        +name: str
+        +type: str
+        +age: int
+        +tasks: List~Task~
+        +add_task(task: Task)
+    }
+
+    class Owner {
+        +name: str
+        +preferences: Dict
+        +available_time: int
+        +pets: List~Pet~
+        +add_pet(pet: Pet)
+        +set_preferences(prefs: Dict)
+        +get_all_tasks() List~Task~
+    }
+
+    class Scheduler {
+        +generate_plan(owner: Owner) List~Task~
+        +time_to_minutes(time_str: str) int
+        +consider_constraints(owner: Owner, tasks: List~Task~) List~Task~
+        +sort_by_time(tasks: List~Task~) List~Task~
+        +detect_time_conflicts(owner: Owner) List~str~
+        +get_tasks_for_pet(owner: Owner, pet_name: str) List~Task~
+        +get_incomplete_tasks(owner: Owner) List~Task~
+    }
+
+    Owner "1" --> "0..*" Pet : has
+    Pet "1" --> "0..*" Task : has
+    Scheduler ..> Owner : reads owner data
+    Scheduler ..> Pet : iterates tasks by pet
+    Scheduler ..> Task : sorts/filters/validates
+    Task ..> Task : creates next recurring task

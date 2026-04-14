@@ -1,0 +1,43 @@
+graph TD
+    subgraph "User Interface (Streamlit)"
+        A[Owner Profile Input] --> B[Pet & Task Management]
+        B --> C[Schedule Generation Button]
+        C --> D{AI Enabled?}
+    end
+
+    subgraph "AI Scheduling Pipeline"
+        D -->|Yes| E[InputValidator]
+        E -->|Valid| F[AIScheduler._call_ai]
+        F --> G[OpenAI GPT-4o-mini]
+        G --> H[OutputParser]
+        H --> I[OutputParser.validate_schedule]
+        E -->|Invalid| J[Return Validation Errors]
+    end
+
+    subgraph "Responsible AI Guardrails"
+        E -.->|"Input sanitization<br/>Max 50 tasks<br/>Time budget check"| E
+        H -.->|"JSON parsing<br/>Task matching<br/>Confidence check"| H
+        I -.->|"Time constraint<br/>enforcement"| I
+    end
+
+    subgraph "Rule-Based Fallback"
+        D -->|No| K[Scheduler.generate_plan]
+        F -->|API Error| K
+        K --> L[Priority + Time Sorting]
+        L --> M[Conflict Detection]
+    end
+
+    subgraph "Output"
+        I --> N[AIScheduleResult]
+        M --> N
+        J --> N
+        N --> O[Schedule Table]
+        N --> P[AI Reasoning Display]
+        N --> Q[Warnings & Confidence]
+    end
+
+    style E fill:#ff9800,color:#000
+    style H fill:#ff9800,color:#000
+    style I fill:#ff9800,color:#000
+    style G fill:#4caf50,color:#fff
+    style K fill:#2196f3,color:#fff

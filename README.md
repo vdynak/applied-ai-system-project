@@ -1,30 +1,92 @@
-# PawPal+ (Module 2 Project)
+# PawPal+ AI — Applied AI Pet Care Scheduling System
 
-You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
+PawPal+ AI is an intelligent pet care scheduling system that uses OpenAI's GPT to generate optimized daily plans with transparent, explainable reasoning. It evolves the original PawPal+ Module 2 prototype into a full applied AI system with responsible design principles.
 
-## Scenario
+## What This System Does
 
-A busy pet owner needs help staying consistent with pet care. They want an assistant that can:
+PawPal+ AI helps busy pet owners plan their daily pet care by combining rule-based scheduling logic with LLM-powered intelligence. The system:
 
-- Track pet care tasks (walks, feeding, meds, enrichment, grooming, etc.)
-- Consider constraints (time available, priority, owner preferences)
-- Produce a daily plan and explain why it chose that plan
+- Accepts owner profiles, pets, and care tasks through a Streamlit interface
+- Sends task data to OpenAI GPT-4o-mini to generate an optimized schedule
+- Returns the schedule alongside natural language reasoning explaining **why** tasks are ordered the way they are
+- Validates all inputs before AI processing and all outputs after
+- Falls back gracefully to rule-based scheduling if the AI is unavailable
 
-Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
+## System Architecture
 
-## What you will build
+![System Architecture](assets/architecture.png)
 
-Your final app should:
+The system follows a three-layer design:
 
-- Let a user enter basic owner + pet info
-- Let a user add/edit tasks (duration + priority at minimum)
-- Generate a daily schedule/plan based on constraints and priorities
-- Display the plan clearly (and ideally explain the reasoning)
-- Include tests for the most important scheduling behaviors
+1. **User Interface (Streamlit)** — Collects owner, pet, and task data. Displays schedules with AI reasoning.
+2. **AI Scheduling Pipeline** — Validates inputs, calls OpenAI, parses output, and enforces constraints.
+3. **Rule-Based Fallback** — The original Module 2 scheduler serves as a safety net when AI is unavailable.
 
-## Getting started
+Three responsible AI guardrails (shown in orange) sit between each stage: `InputValidator` sanitizes data before the LLM sees it, `OutputParser` ensures the AI response is valid JSON mapping to real tasks, and `validate_schedule` enforces the owner's time budget regardless of what the AI suggests.
 
-### Setup
+## Responsible AI Design
+
+This project demonstrates responsible AI through several concrete mechanisms:
+
+**Input Guardrails (`InputValidator`):**
+- Rejects empty owner names, zero/negative time budgets, and missing pets or tasks
+- Caps maximum tasks at 50 to prevent prompt injection via excessive input
+- Limits task description length to 200 characters
+
+**Output Guardrails (`OutputParser`):**
+- Parses AI JSON strictly; extracts from markdown code blocks if needed
+- Maps AI-suggested task names back to actual Task objects (prevents hallucinated tasks)
+- Validates confidence values to an allowed set ("high", "medium", "low")
+
+**Time Constraint Enforcement:**
+- Even if the AI suggests a schedule exceeding the time budget, `validate_schedule` removes overflow tasks and generates warnings
+
+**Transparent Fallback:**
+- Every `AIScheduleResult` includes `used_fallback` so users always know whether AI or rules generated their plan
+- The fallback produces its own reasoning string explaining the rule-based strategy
+
+**Explainability:**
+- Every schedule includes a reasoning paragraph from the AI
+- A confidence indicator (high/medium/low) is displayed
+- An optional transparency panel shows model metadata and processing details
+
+## How the AI Works
+
+When a user clicks "Generate Schedule," the system:
+
+1. **Validates** the owner, pets, and tasks using `InputValidator`
+2. **Builds a prompt** describing all pets, their tasks, priorities, and the time budget
+3. **Sends the prompt** to GPT-4o-mini with a system prompt that enforces pet welfare rules (e.g., never skip medication, prioritize feeding)
+4. **Parses the response** as JSON, mapping suggested task names back to real Task objects
+5. **Enforces constraints** — removes any tasks that would exceed the time budget
+6. **Adds conflict warnings** from the rule-based system's time-slot detector
+7. **Returns** the schedule, reasoning, warnings, confidence level, and fallback status
+
+If steps 3-4 fail for any reason (no API key, network error, malformed response), the system automatically falls back to the original rule-based scheduler and tells the user.
+
+## Project Structure
+
+```
+applied-ai-system-project/
+├── app.py                  # Streamlit UI (updated for AI features)
+├── pawpal_system.py        # Original domain classes (Task, Pet, Owner, Scheduler)
+├── ai_scheduler.py         # NEW: AI scheduling module with guardrails
+├── main.py                 # CLI demo script
+├── requirements.txt        # Dependencies (streamlit, pytest, openai)
+├── reflection.md           # Module 2 reflection (preserved)
+├── assets/
+│   ├── architecture.mmd    # Mermaid source for system architecture diagram
+│   ├── architecture.png    # Exported architecture diagram
+│   ├── uml_final.mmd       # Original UML diagram source
+│   ├── uml_final.png       # Original UML diagram
+│   ├── pawpal_diagram.md   # Original diagram notes
+│   └── app.png             # Original app screenshot
+└── tests/
+    ├── test_pawpal.py      # Original scheduler tests (3 tests)
+    └── test_ai_scheduler.py # NEW: AI module tests (11 tests)
+```
+
+## Setup
 
 ```bash
 python -m venv .venv
@@ -32,54 +94,46 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Suggested workflow
-
-1. Read the scenario carefully and identify requirements and edge cases.
-2. Draft a UML diagram (classes, attributes, methods, relationships).
-3. Convert UML into Python class stubs (no logic yet).
-4. Implement scheduling logic in small increments.
-5. Add tests to verify key behaviors.
-6. Connect your logic to the Streamlit UI in `app.py`.
-7. Refine UML so it matches what you actually built.
-
-## Smarter Scheduling
-
-Recent scheduling improvements include:
-
-- Time-aware sorting: tasks can be sorted by HH:MM time for clearer ordering.
-- Flexible filtering: tasks can be filtered by pet and by completion status.
-- Recurring task handling: daily and weekly tasks can auto-generate the next occurrence when completed.
-- Lightweight conflict detection: the scheduler returns warnings when multiple tasks are scheduled at the same time.
-
-## Features
-
-- Owner and pet management: create an owner profile, add multiple pets, and store each pet's task list.
-- Task modeling with recurrence: tasks track description, HH:MM time, priority, type, frequency, completion status, and due date.
-- Priority-aware plan generation: builds a daily plan constrained by available owner time.
-- Sorting by time: supports chronological HH:MM sorting for cleaner schedule review.
-- Filtering by pet and status: view pet-specific tasks and incomplete tasks only.
-- Daily/weekly recurrence logic: marking recurring tasks complete creates the next occurrence automatically.
-- Conflict warnings: detects duplicate time slots and returns lightweight warning messages instead of failing.
-- Streamlit-first visibility: schedule outputs and warnings are presented using tables and status components for clear UX.
-
-## 📸 Demo
-
-<a href="app.png" target="_blank"><img src='app.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
-
-## Testing PawPal+
-
-Run the automated tests with:
-
+Set your OpenAI API key:
 ```bash
-python -m pytest
+export OPENAI_API_KEY="sk-..."  # macOS/Linux
+set OPENAI_API_KEY=sk-...       # Windows
 ```
 
-Current tests cover core scheduler behavior, including:
+Or enter it directly in the app's sidebar (it is not stored).
 
-- Sorting correctness for HH:MM task times.
-- Recurrence logic for daily tasks creating the next occurrence after completion.
-- Conflict detection warnings when multiple tasks share the same scheduled time.
+## Running the App
 
-Confidence Level: ★★★★☆ (4/5)
+```bash
+streamlit run app.py
+```
 
-The test suite is currently green and validates key happy paths and important edge cases, but additional coverage for more complex overlap scenarios and UI integration would further improve reliability.
+## Running Tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+All 14 tests run without an API key. The AI module tests validate input guardrails, output parsing, fallback behavior, and constraint enforcement using mocked/structured data.
+
+## Evolution from Module 2
+
+| Aspect | Module 2 (Original) | Module 4 (This Project) |
+|--------|---------------------|------------------------|
+| Scheduling | Rule-based priority sorting | AI-powered with LLM reasoning |
+| Explainability | None | Natural language reasoning for every schedule |
+| Guardrails | None | Input validation, output parsing, time enforcement |
+| Fallback | N/A | Automatic rule-based fallback on AI failure |
+| Transparency | None | Confidence indicators, fallback disclosure, debug panel |
+| Tests | 3 tests | 14 tests (original + AI module) |
+| Architecture | Single module | Layered: UI → AI Pipeline → Fallback |
+
+## Testing
+
+```bash
+python -m pytest tests/ -v
+```
+
+**Confidence Level: ★★★★☆ (4/5)**
+
+The test suite validates all guardrails, parsing, and fallback paths without requiring an API key. Live AI integration tests would require mocking the OpenAI client, which is a logical next step.

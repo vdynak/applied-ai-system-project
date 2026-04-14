@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 680" width="900" height="680">
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; }
+      .title { font-size: 18px; font-weight: bold; fill: #1a1a1a; }
+      .subtitle { font-size: 12px; fill: #555; }
+      .box-label { font-size: 11px; fill: #fff; font-weight: bold; }
+      .box-label-dark { font-size: 11px; fill: #1a1a1a; font-weight: bold; }
+      .section-title { font-size: 13px; font-weight: bold; fill: #333; }
+      .arrow { stroke: #555; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-dashed { stroke: #999; stroke-width: 1; fill: none; stroke-dasharray: 5,3; marker-end: url(#arrowhead-light); }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#555"/>
+    </marker>
+    <marker id="arrowhead-light" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#999"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="680" fill="#fafafa" rx="8"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" class="title">PawPal+ AI — System Architecture</text>
+  <text x="450" y="48" text-anchor="middle" class="subtitle">AI-Powered Pet Care Scheduling with Responsible Design</text>
+
+  <!-- Layer 1: User Interface -->
+  <rect x="30" y="65" width="840" height="85" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="50" y="85" class="section-title" fill="#1565c0">Layer 1: User Interface (Streamlit)</text>
+  <rect x="50" y="95" width="140" height="40" rx="5" fill="#1976d2"/>
+  <text x="120" y="120" text-anchor="middle" class="box-label">Owner Profile</text>
+  <rect x="210" y="95" width="140" height="40" rx="5" fill="#1976d2"/>
+  <text x="280" y="120" text-anchor="middle" class="box-label">Pet &amp; Tasks</text>
+  <rect x="370" y="95" width="160" height="40" rx="5" fill="#1976d2"/>
+  <text x="450" y="120" text-anchor="middle" class="box-label">Generate Schedule</text>
+  <rect x="560" y="95" width="140" height="40" rx="5" fill="#1565c0"/>
+  <text x="630" y="120" text-anchor="middle" class="box-label">AI Reasoning</text>
+  <rect x="720" y="95" width="130" height="40" rx="5" fill="#1565c0"/>
+  <text x="785" y="120" text-anchor="middle" class="box-label">Confidence</text>
+
+  <!-- Arrow from UI to AI Pipeline -->
+  <line x1="450" y1="150" x2="450" y2="175" class="arrow"/>
+
+  <!-- Decision diamond -->
+  <polygon points="450,175 490,200 450,225 410,200" fill="#fff" stroke="#555" stroke-width="1.5"/>
+  <text x="450" y="204" text-anchor="middle" font-size="10" fill="#333">AI on?</text>
+
+  <!-- Layer 2: AI Scheduling Pipeline -->
+  <rect x="30" y="240" width="520" height="190" rx="6" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="50" y="260" class="section-title" fill="#2e7d32">Layer 2: AI Scheduling Pipeline</text>
+
+  <!-- InputValidator (orange guardrail) -->
+  <rect x="50" y="275" width="150" height="45" rx="5" fill="#ff9800"/>
+  <text x="125" y="295" text-anchor="middle" class="box-label">InputValidator</text>
+  <text x="125" y="310" text-anchor="middle" font-size="9" fill="#fff">Guardrail #1</text>
+
+  <!-- OpenAI API (green) -->
+  <rect x="220" y="275" width="150" height="45" rx="5" fill="#4caf50"/>
+  <text x="295" y="295" text-anchor="middle" class="box-label">OpenAI GPT-4o-mini</text>
+  <text x="295" y="310" text-anchor="middle" font-size="9" fill="#fff">LLM API Call</text>
+
+  <!-- OutputParser (orange guardrail) -->
+  <rect x="390" y="275" width="150" height="45" rx="5" fill="#ff9800"/>
+  <text x="465" y="295" text-anchor="middle" class="box-label">OutputParser</text>
+  <text x="465" y="310" text-anchor="middle" font-size="9" fill="#fff">Guardrail #2</text>
+
+  <!-- validate_schedule (orange guardrail) -->
+  <rect x="150" y="340" width="180" height="45" rx="5" fill="#ff9800"/>
+  <text x="240" y="360" text-anchor="middle" class="box-label">validate_schedule</text>
+  <text x="240" y="375" text-anchor="middle" font-size="9" fill="#fff">Guardrail #3: Time Budget</text>
+
+  <!-- Conflict Detection -->
+  <rect x="350" y="340" width="180" height="45" rx="5" fill="#66bb6a"/>
+  <text x="440" y="360" text-anchor="middle" class="box-label">Conflict Detection</text>
+  <text x="440" y="375" text-anchor="middle" font-size="9" fill="#fff">Time-slot Warnings</text>
+
+  <!-- Guardrail detail labels -->
+  <text x="125" y="410" text-anchor="middle" font-size="9" fill="#e65100">Max 50 tasks</text>
+  <text x="125" y="420" text-anchor="middle" font-size="9" fill="#e65100">Input sanitization</text>
+  <text x="465" y="410" text-anchor="middle" font-size="9" fill="#e65100">JSON validation</text>
+  <text x="465" y="420" text-anchor="middle" font-size="9" fill="#e65100">Task matching</text>
+
+  <!-- Arrows within AI pipeline -->
+  <line x1="200" y1="297" x2="218" y2="297" class="arrow"/>
+  <line x1="370" y1="297" x2="388" y2="297" class="arrow"/>
+  <line x1="465" y1="320" x2="465" y2="328" class="arrow"/>
+  <path d="M 465 328 Q 465 335 350 355" class="arrow" fill="none"/>
+  <line x1="240" y1="320" x2="240" y2="338" class="arrow"/>
+
+  <!-- Arrow from decision to AI pipeline -->
+  <line x1="430" y1="215" x2="125" y2="273" class="arrow"/>
+  <text x="250" y="240" font-size="10" fill="#388e3c">Yes</text>
+
+  <!-- Layer 3: Rule-Based Fallback -->
+  <rect x="570" y="240" width="300" height="190" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="590" y="260" class="section-title" fill="#e65100">Layer 3: Rule-Based Fallback</text>
+  <rect x="590" y="275" width="260" height="40" rx="5" fill="#ff9800"/>
+  <text x="720" y="300" text-anchor="middle" class="box-label">Scheduler.generate_plan()</text>
+  <rect x="590" y="325" width="125" height="40" rx="5" fill="#ffb74d"/>
+  <text x="652" y="350" text-anchor="middle" class="box-label-dark">Priority Sort</text>
+  <rect x="725" y="325" width="125" height="40" rx="5" fill="#ffb74d"/>
+  <text x="787" y="350" text-anchor="middle" class="box-label-dark">Time Sort</text>
+  <rect x="590" y="375" width="260" height="40" rx="5" fill="#ffcc80"/>
+  <text x="720" y="400" text-anchor="middle" class="box-label-dark">Conflict Detection</text>
+
+  <!-- Arrow from decision to fallback -->
+  <line x1="470" y1="215" x2="720" y2="273" class="arrow"/>
+  <text x="620" y="240" font-size="10" fill="#e65100">No / API Error</text>
+
+  <!-- Layer 4: Output -->
+  <rect x="30" y="450" width="840" height="95" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+  <text x="50" y="470" class="section-title" fill="#6a1b9a">Output: AIScheduleResult</text>
+  <rect x="50" y="480" width="130" height="50" rx="5" fill="#7b1fa2"/>
+  <text x="115" y="502" text-anchor="middle" class="box-label">Schedule</text>
+  <text x="115" y="518" text-anchor="middle" font-size="9" fill="#e1bee7">Ordered Tasks</text>
+  <rect x="200" y="480" width="130" height="50" rx="5" fill="#7b1fa2"/>
+  <text x="265" y="502" text-anchor="middle" class="box-label">Reasoning</text>
+  <text x="265" y="518" text-anchor="middle" font-size="9" fill="#e1bee7">NL Explanation</text>
+  <rect x="350" y="480" width="130" height="50" rx="5" fill="#7b1fa2"/>
+  <text x="415" y="502" text-anchor="middle" class="box-label">Warnings</text>
+  <text x="415" y="518" text-anchor="middle" font-size="9" fill="#e1bee7">Conflicts</text>
+  <rect x="500" y="480" width="130" height="50" rx="5" fill="#7b1fa2"/>
+  <text x="565" y="502" text-anchor="middle" class="box-label">Confidence</text>
+  <text x="565" y="518" text-anchor="middle" font-size="9" fill="#e1bee7">High/Med/Low</text>
+  <rect x="650" y="480" width="200" height="50" rx="5" fill="#7b1fa2"/>
+  <text x="750" y="502" text-anchor="middle" class="box-label">Fallback Status</text>
+  <text x="750" y="518" text-anchor="middle" font-size="9" fill="#e1bee7">AI vs Rule-Based</text>
+
+  <!-- Arrows to output -->
+  <line x1="240" y1="385" x2="240" y2="448" class="arrow"/>
+  <line x1="720" y1="415" x2="720" y2="448" class="arrow"/>
+
+  <!-- Legend -->
+  <rect x="30" y="560" width="840" height="105" rx="6" fill="#f5f5f5" stroke="#bbb" stroke-width="1"/>
+  <text x="50" y="580" class="section-title">Legend</text>
+  <rect x="50" y="590" width="20" height="15" rx="3" fill="#ff9800"/>
+  <text x="80" y="602" font-size="11" fill="#333">Responsible AI Guardrail</text>
+  <rect x="250" y="590" width="20" height="15" rx="3" fill="#4caf50"/>
+  <text x="280" y="602" font-size="11" fill="#333">AI / LLM Component</text>
+  <rect x="450" y="590" width="20" height="15" rx="3" fill="#1976d2"/>
+  <text x="480" y="602" font-size="11" fill="#333">User Interface</text>
+  <rect x="650" y="590" width="20" height="15" rx="3" fill="#7b1fa2"/>
+  <text x="680" y="602" font-size="11" fill="#333">Output</text>
+  <rect x="50" y="615" width="20" height="15" rx="3" fill="#ffb74d"/>
+  <text x="80" y="627" font-size="11" fill="#333">Rule-Based Fallback</text>
+
+  <text x="50" y="655" font-size="10" fill="#888">Data flows: User Input → Validation → AI/Fallback → Output Verification → Display with Reasoning</text>
+</svg>
